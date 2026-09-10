@@ -2,7 +2,7 @@
 
 A fully segmented corporate network simulation with firewall, IDS, vulnerable services, and an AI-powered SOC dashboard for real-time threat detection and analysis. Built as a personal cybersecurity portfolio project.
 
-![Network Topology](diagrams/topología_de_red.png)
+![Network Topology](diagrams/Topología_de_red.png)
 
 ## Overview
 
