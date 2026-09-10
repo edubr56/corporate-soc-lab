@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Analyst AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--bg2:#111827;--bg3:#1a2332;--text:#e2e8f0;--muted:#8892a4;--accent:#3b82f6;--danger:#ef4444;--warn:#f59e0b;--success:#22c55e;--border:#1e293b;--radius:10px}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.header{display:flex;align-items:center;gap:14px;margin-bottom:2rem}
+.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:22px;color:white;font-weight:700}
+h1{font-size:22px;font-weight:600}
+.subtitle{font-size:13px;color:var(--muted);margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px}
+.stat-value{font-size:26px;font-weight:700}
+.critical{color:var(--danger)}.high{color:var(--warn)}.medium{color:var(--accent)}.low{color:var(--success)}
+.controls{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;color:white}
+.btn-primary{background:var(--accent)}.btn-primary:hover{background:#2563eb}
+.btn-secondary{background:var(--bg3);border:1px solid var(--border);color:var(--text)}.btn-secondary:hover{background:#243044}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alert-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.alert-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+.alert-header:hover{background:rgba(255,255,255,.02)}
+.badge{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.badge-critical{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+.badge-high{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+.badge-medium{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+.badge-low{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
+.badge-info{background:rgba(6,182,212,.12);color:#06b6d4;border:1px solid rgba(6,182,212,.3)}
+.alert-title{flex:1;font-size:14px;font-weight:500}
+.chevron{color:var(--muted);transition:transform .2s;font-size:16px}.chevron.open{transform:rotate(180deg)}
+.alert-body{padding:0 16px 16px;display:none}.alert-body.open{display:block}
+.section{margin-bottom:14px}.section:last-child{margin-bottom:0}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px}
+.section-content{font-size:13.5px;line-height:1.7;color:#c8d0dc}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field{background:var(--bg3);border-radius:6px;padding:10px 12px}
+.field-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.field-value{font-size:13px;font-weight:500}
+.mit-list{list-style:none;counter-reset:m}
+.mit-list li{counter-increment:m;padding:8px 12px 8px 40px;background:var(--bg3);border-radius:6px;margin-bottom:6px;font-size:13px;line-height:1.6;position:relative}
+.mit-list li::before{content:counter(m);position:absolute;left:12px;top:9px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.rule-box{background:var(--bg3);border-radius:6px;padding:12px;font-family:monospace;font-size:12px;line-height:1.6;color:#a5b4c8;overflow-x:auto;white-space:pre-wrap;word-break:break-all;border-left:3px solid var(--accent)}
+.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:12px 16px;color:#fca5a5;font-size:13px;margin-bottom:16px}
+.empty{text-align:center;padding:3rem;color:var(--muted)}.empty p{font-size:14px;margin-bottom:4px}.empty span{font-size:12px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-left:auto}
+.raw-box{background:var(--bg3);padding:16px;border-radius:10px;font-family:monospace;font-size:12px;overflow-x:auto;color:#a5b4c8;max-height:500px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.timestamp{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div class="logo">S</div>
+<div><h1>SOC Analyst AI</h1><div class="subtitle">Dashboard de seguridad en tiempo real — Red MGMT (10.0.3.0/24)</div></div>
+<div class="status"><div class="live-dot"></div>OPNsense 10.0.3.1</div>
+</div>
+<div class="stats">
+<div class="stat"><div class="stat-label">Criticas</div><div class="stat-value critical" id="s-crit">0</div></div>
+<div class="stat"><div class="stat-label">Altas</div><div class="stat-value high" id="s-high">0</div></div>
+<div class="stat"><div class="stat-label">Medias</div><div class="stat-value medium" id="s-med">0</div></div>
+<div class="stat"><div class="stat-label">Bajas / Info</div><div class="stat-value low" id="s-low">0</div></div>
+</div>
+<div class="controls">
+<button class="btn btn-primary" id="fetchBtn" onclick="fetchAndAnalyze()">Obtener y analizar alertas<div class="spinner" id="spinner"></div></button>
+<button class="btn btn-secondary" onclick="fetchRaw()">Ver alertas raw</button>
+<button class="btn btn-secondary" onclick="clearAll()">Limpiar</button>
+</div>
+<div id="error"></div>
+<div id="results"><div class="empty"><p>Sin alertas analizadas</p><span>Pulsa "Obtener y analizar alertas" para conectar con OPNsense via SSH</span></div></div>
+</div>
+<script>
+let counts={critical:0,high:0,medium:0,low:0};
+function updateStats(){document.getElementById("s-crit").textContent=counts.critical;document.getElementById("s-high").textContent=counts.high;document.getElementById("s-med").textContent=counts.medium;document.getElementById("s-low").textContent=counts.low}
+function toggle(el){el.nextElementSibling.classList.toggle("open");el.querySelector(".chevron").classList.toggle("open")}
+function esc(s){if(!s)return"";const d=document.createElement("div");d.textContent=String(s);return d.innerHTML}
+function clearAll(){document.getElementById("results").innerHTML='<div class="empty"><p>Sin alertas analizadas</p></div>';document.getElementById("error").innerHTML="";counts={critical:0,high:0,medium:0,low:0};updateStats()}
+async function fetchRaw(){
+try{const r=await fetch("/api/alerts");const d=await r.json();
+document.getElementById("results").innerHTML='<div class="raw-box">'+esc(JSON.stringify(d,null,2))+"</div>";
+}catch(e){document.getElementById("error").innerHTML='<div class="error">'+esc(e.message)+"</div>"}}
+async function fetchAndAnalyze(){
+const btn=document.getElementById("fetchBtn"),sp=document.getElementById("spinner");
+btn.disabled=true;sp.style.display="inline-block";document.getElementById("error").innerHTML="";
+try{
+const r=await fetch("/api/alerts");const raw=await r.json();
+if(raw.error)throw new Error(raw.error);
+if(!Array.isArray(raw)||raw.length===0)throw new Error("No se encontraron alertas en OPNsense");
+const r2=await fetch("/api/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({alerts:JSON.stringify(raw)})});
+const analyzed=await r2.json();
+if(analyzed.error)throw new Error(analyzed.error);
+const arr=Array.isArray(analyzed)?analyzed:[analyzed];
+const c=document.getElementById("results");c.innerHTML="";
+arr.forEach(function(a){
+const sev=a.severity||"medium";
+if(sev==="critical")counts.critical++;else if(sev==="high")counts.high++;else if(sev==="medium")counts.medium++;else counts.low++;
+const mits=(a.mitigations||[]).map(function(m){return"<li>"+esc(m)+"</li>"}).join("");
+c.innerHTML+='<div class="alert-card"><div class="alert-header" onclick="toggle(this)"><span class="badge badge-'+sev+'">'+sev+'</span><span class="alert-title">'+esc(a.signature)+'</span><span class="chevron">&#9660;</span></div><div class="alert-body"><div class="section"><div class="section-title">Detalles de conexion</div><div class="field-grid"><div class="field"><div class="field-label">IP Origen</div><div class="field-value">'+esc(a.src_ip)+'</div></div><div class="field"><div class="field-label">IP Destino</div><div class="field-value">'+esc(a.dst_ip)+'</div></div><div class="field"><div class="field-label">Protocolo</div><div class="field-value">'+esc(a.protocol)+'</div></div><div class="field"><div class="field-label">MITRE ATT&CK</div><div class="field-value">'+esc(a.mitre_attack)+'</div></div></div></div><div class="section"><div class="section-title">Analisis del ataque</div><div class="section-content">'+esc(a.description)+'</div></div><div class="section"><div class="section-title">Impacto potencial</div><div class="section-content">'+esc(a.impact)+'</div></div><div class="section"><div class="section-title">Pasos de mitigacion</div><ol class="mit-list">'+mits+'</ol></div>'+(a.suricata_rule?'<div class="section"><div class="section-title">Regla Suricata sugerida</div><div class="rule-box">'+esc(a.suricata_rule)+'</div></div>':'')+'</div></div>';
+});
+updateStats();
+}catch(e){document.getElementById("error").innerHTML='<div class="error">Error: '+esc(e.message)+"</div>"}
+finally{btn.disabled=false;sp.style.display="none"}}
+</script>
+</body>
+</html>

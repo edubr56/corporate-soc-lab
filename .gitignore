@@ -1,0 +1,32 @@
+# Environment variables with secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# VM files (never upload these)
+*.vmdk
+*.vmx
+*.vmem
+*.vmsn
+*.vmsd
+*.iso

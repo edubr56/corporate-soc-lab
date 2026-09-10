@@ -1,0 +1,19 @@
+version: '3'
+services:
+  dvwa:
+    image: vulnerables/web-dvwa
+    ports:
+      - "80:80"
+    restart: always
+
+  juice-shop:
+    image: bkimminich/juice-shop
+    ports:
+      - "3000:3000"
+    restart: always
+
+  webgoat:
+    image: webgoat/webgoat
+    ports:
+      - "8080:8080"
+    restart: always
